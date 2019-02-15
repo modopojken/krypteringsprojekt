@@ -1,7 +1,5 @@
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class kryptera {
@@ -12,19 +10,23 @@ public class kryptera {
         String line = null;
         String keyline = null;
 
-        System.out.println("Välj meddelandet som skall läsas");
+        System.out.println("Välj meddelandet sedan nyckeln");
 
         try {
             br = new BufferedReader(new FileReader("C:\\Users\\coel16\\IdeaProjects\\krypteringsprojekt\\" + scanner.next()));
+
         }catch (FileNotFoundException fnfex){
             System.out.println(fnfex.getMessage() + "Filen hittades inte");
             System.exit(0);
         }
 
+
+
+        ArrayList<String> lines = new ArrayList<String>();
         //Här läser vi raderna
         try {
             while ((line = br.readLine()) != null){
-                System.out.println(line);
+                lines.add(line);
             }
         }catch (IOException ioex){
             System.out.println(ioex.getMessage() + "Error i läsandet av filen");
@@ -33,6 +35,8 @@ public class kryptera {
 
         System.out.println("Välj din nyckel");
 
+
+
         try {
             br = new BufferedReader(new FileReader("C:\\Users\\coel16\\IdeaProjects\\krypteringsprojekt\\" + scanner.next()));
         }catch (FileNotFoundException fnfex){
@@ -40,10 +44,12 @@ public class kryptera {
             System.exit(0);
         }
 
+
+        ArrayList<String> keylines = new ArrayList<String>();
         //Här läser vi raderna
         try {
             while ((keyline = br.readLine()) != null){
-                System.out.println(line);
+                keylines.add(keyline);
             }
         }catch (IOException ioex){
             System.out.println(ioex.getMessage() + "Error i läsandet av filen");
@@ -53,8 +59,8 @@ public class kryptera {
 
 
 
-        String msg = line;
-        String key = keyline;
+        String msg = lines.get(0);
+        String key = keylines.get(0);
 
 
 
@@ -64,24 +70,69 @@ public class kryptera {
             crypt[i] = msg.charAt(i) ^ key.charAt(i);
         }
 
-        System.out.println("Krypterat: ");
+        DataOutputStream output = null;
+        String filename = "hejsansvejsan.dat";
+        try {
+            output = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(filename)));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        //System.out.println("Krypterat: ");
         //skriv ut
         for (int i = 0 ; i < crypt.length ; i++){
-            System.out.print(crypt[i]);
+            try {
+                output.write(crypt[i]);
+            } catch (IOException e) {
+                e.printStackTrace();
+
+            }
+        }
+        try {
+            output.close();
+        } catch (IOException e1) {
+            e1.printStackTrace();
         }
 
-        int[] decrypt = new int[crypt.length];
+
+        //int[] decrypt = new int[crypt.length];
         //dekryptera crypt ^ key
-        for(int i = 0 ; i < crypt.length ; i++) {
-            decrypt[i] = crypt[i] ^ key.charAt(i);
-        }
+        //for(int i = 0 ; i < crypt.length ; i++) {
+          //  decrypt[i] = crypt[i] ^ key.charAt(i);
+        //}
 
-        System.out.println("\nDekrypterat: ");
+        //System.out.println("\nDekrypterat: ");
         //skriv ut
-        for (int i = 0 ; i < decrypt.length ; i++){
-            System.out.print((char)decrypt[i]);
+        //for (int i = 0 ; i < decrypt.length ; i++){
+            //System.out.print((char)decrypt[i]);
 
+        //}
+
+
+        DataInputStream input = null;
+        try {
+            input = new DataInputStream (new BufferedInputStream(new FileInputStream(filename)));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
+
+        ArrayList<Integer> inputlines = new ArrayList<Integer>();
+        try {
+            int i;
+            int count = 0;
+            while ((i = input.read()) >= 0){
+
+
+
+                System.out.print((char)(i^key.charAt(count)));
+                count++;
+
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 }
 
